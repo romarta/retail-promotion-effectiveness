@@ -26,6 +26,23 @@ Assess whether promotional campaigns generate additional sales or primarily shif
 
 [dunnhumby — The Complete Journey](https://www.dunnhumby.com/source-files/)
 
+## Data Understanding
+
+The initial data assessment covers all eight source tables, including 2.6 million transaction lines and 36.8 million product-store-week promotion records.
+
+Key findings:
+- Overlapping campaign periods and multiple campaign assignments per household.
+- Limited demographic coverage and potential selection bias.
+- Zero-value transactions, special product records, and department-specific quantity scales.
+- Repeated promotion records with different display codes for the same product, store, and week.
+- Promotional exposure coverage limitations and assumptions required to identify non-exposed products.
+
+Detailed exploration: [`01_data_understanding.ipynb`](notebooks/01_data_understanding.ipynb)
+
+Data quality findings and analytical implications: [`docs/data_understanding.md`](docs/data_understanding.md)
+
 ## Project Status
 
-In progress — data preparation.
+**Completed:** Project setup and source data understanding.
+
+**Next:** PostgreSQL database setup, data import, and data quality validation.
