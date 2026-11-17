@@ -1,48 +1,42 @@
 # Retail Promotion Effectiveness & Incrementality
 
-## Project Overview
+## Objective
 
-An end-to-end retail analytics project evaluating promotional campaigns, customer purchasing behavior, and incremental sales using the dunnhumby *The Complete Journey* dataset.
+Evaluate retail campaign and coupon performance, product display and mailer exposure, and the feasibility of estimating incremental sales using dunnhumby's *The Complete Journey* dataset. Descriptive associations will be distinguished from causal effects.
 
-## Business Objective
+## Data & Architecture
 
-Assess whether promotional campaigns generate additional sales or primarily shift existing purchasing behavior.
+The dataset includes 2,500 households, 2.6 million transaction lines, and 36.8 million promotion exposure records.
 
-## Analytical Scope
+- **`raw` (8 tables):** Original CSV data, retained without deduplication.
+- **`analytics` (11 tables):** Sales, customer, product, campaign, and coupon model.
+- **`analytics.v_promotion_exposure`:** Read-only view of `raw.causal_data` (`display` and `mailer`); no duplicated promotion dataset.
+- **`analytics.mv_sales_product_store_week`:** Materialized weekly sales by product and store.
 
-- Retail sales and customer purchasing behavior
-- Promotional campaign and coupon effectiveness
-- Incremental sales estimation and causal inference
-- Product cannibalization and purchase timing
-- Business recommendations for promotional decisions
+Promotion exposure is recorded at product–store–week level; campaigns and coupon redemptions operate at household/campaign level. These mechanisms require separate analytical definitions before joining.
 
-## Tools & Technologies
+## Tools
 
-- **PostgreSQL:** Data preparation, validation, and analytical queries
-- **Python:** Exploratory data analysis and statistical modeling
-- **Power BI:** Business performance reporting and visualization
+**PostgreSQL / pgAdmin 4** — import, modeling, validation, and aggregation  
+**Python** — exploratory and statistical analysis  
+**Power BI** — business reporting
 
-## Data Source
+## Reproducibility
 
-[dunnhumby — The Complete Journey](https://www.dunnhumby.com/source-files/)
+1. Obtain the [dunnhumby dataset](https://www.dunnhumby.com/source-files/) and place the eight CSVs in `data/raw/` (excluded from Git).
+2. Run `sql/01_create_schemas.sql` and `sql/02_create_tables.sql` in PostgreSQL.
+3. Import CSVs through pgAdmin 4 following [`docs/data_import.md`](docs/data_import.md).
+4. Run the remaining scripts in numeric order (`03`–`10`).
 
-## Data Understanding
+The SQL scripts build the model once; they are not intended to be rerun blindly against a populated database.
 
-The initial data assessment covers all eight source tables, including 2.6 million transaction lines and 36.8 million product-store-week promotion records.
+## Limitations
 
-Key findings:
-- Overlapping campaign periods and multiple campaign assignments per household.
-- Limited demographic coverage and potential selection bias.
-- Zero-value transactions, special product records, and department-specific quantity scales.
-- Repeated promotion records with different display codes for the same product, store, and week.
-- Promotional exposure coverage limitations and assumptions required to identify non-exposed products.
+Transaction data cover a sampled household panel, not total store sales. Missing promotion records do not establish that a product was unexposed. Repeated exposure records must be resolved at the analysis grain to avoid multiplying sales.
 
-Detailed exploration: [`01_data_understanding.ipynb`](notebooks/01_data_understanding.ipynb)
+See [`docs/data_understanding.md`](docs/data_understanding.md) and [`notebooks/01_data_understanding.ipynb`](notebooks/01_data_understanding.ipynb).
 
-Data quality findings and analytical implications: [`docs/data_understanding.md`](docs/data_understanding.md)
+## Status
 
-## Project Status
-
-**Completed:** Project setup and source data understanding.
-
-**Next:** PostgreSQL database setup, data import, and data quality validation.
+**Completed:** Source exploration, PostgreSQL import, validation, analytical model, and initial promotion coverage diagnostics.  
+**Next:** Python analysis of campaigns, coupons, display/mailer exposure, and incrementality feasibility; then Power BI reporting.
